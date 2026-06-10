@@ -28,26 +28,53 @@ def load_file():
                 content = f.read()
             text_area.delete("1.0", tk.END)
             text_area.insert("1.0", content)
-            messagebox.showinfo("Success", "File loaded successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while loading the file: {e}")
+
+def give_negrita():
+    try:
+        inicio = text_area.index("sel.first")
+        fin = text_area.index("sel.last")
+        text_area.tag_config("negrita", font=("Arial", 12, "bold"))
+        tags_actuales = text_area.tag_names(inicio)
+
+        if "negrita" in tags_actuales:
+            text_area.tag_remove("negrita", inicio, fin)
+        else:
+            text_area.tag_add("negrita", inicio, fin)
+    except tk.TclError:
+        pass # No hay texto seleccionado, no hacer nada
+
+def insert_check():
+    estado = tk.BooleanVar()
+    check = tk.Checkbutton(text_area, variable=estado)
+    text_area.window_create(tk.INSERT, window=check)
+    text_area.insert(tk.INSERT, " ")  # Agregar un espacio después del checkbox para separar
 
 #Window settings
 window = tk.Tk()
 window.title("CNote")
-window.geometry("400x300")
+window.geometry("480x640")
 
 #Menu settings
 menu_bar = tk.Menu(window)
 window.config(menu=menu_bar)
-
 menu_file = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="File", menu=menu_file)
-
 menu_file.add_command(label="Open", command=load_file)
 menu_file.add_command(label="Save", command=save_file)
 menu_file.add_separator()
 menu_file.add_command(label="Exit", command=window.quit)
+
+#Toolbar settings
+tool_bar = tk.Frame(window, bg="#f0f0f0")
+tool_bar.pack(fill="x", padx=10, pady=5)
+
+button_negrita = tk.Button(tool_bar, text="B", font=("Arial", 12, "bold"), command=give_negrita)
+button_negrita.pack(side="left", padx=5)
+
+button_check = tk.Button(tool_bar, text="Insert Check", command=insert_check, font=("Arial", 10))
+button_check.pack(side="left", padx=5)
 
 #Text area
 text_area = tk.Text(window, font=("Arial", 12))
